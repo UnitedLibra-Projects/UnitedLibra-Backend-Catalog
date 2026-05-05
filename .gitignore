@@ -1,0 +1,5 @@
+build/
+uploads/
+.cache/
+
+config.json
