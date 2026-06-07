@@ -6,64 +6,32 @@
 #include <exception>
 #include <string>
 #include <trantor/utils/Logger.h>
+#include "BaseRepository.h"
 
 drogon::Task<drogon::HttpResponsePtr> CategoriesController::addCategories(drogon::HttpRequestPtr req)
 {
-   auto json_req = req->getJsonObject();
-   
-   std::string name = (*json_req)["name"].asString();
+    auto json_req = req->getJsonObject();
+    std::string name = json_req ? (*json_req)["name"].asString() : "";
 
-   auto db_client = drogon::app().getDbClient();
+    bool success = co_await BaseRepository::addDictionary("categories", name);
 
-   try {
-      co_await db_client->execSqlCoro(
-            R"(
-            INSERT INTO categories (name)
-            VALUES ($1)
-            )",
-            name
-            );
-   } catch (std::exception& ex) {
-      LOG_ERROR << "error: " << ex.what();
-   }
-   Json::Value json_resp;
-   json_resp["status"] = "ok";
-
-   auto resp = drogon::HttpResponse::newHttpJsonResponse(json_resp);
-
-   co_return resp;
+    Json::Value json_resp;
+    json_resp["status"] = success ? "ok" : "error";
+    co_return drogon::HttpResponse::newHttpJsonResponse(json_resp);
 }
 
-drogon::Task<drogon::HttpResponsePtr> AuthorsController::deleteAuthors(drogon::HttpRequestPtr req)
+drogon::Task<drogon::HttpResponsePtr> CategoriesController::deleteCategories(drogon::HttpRequestPtr req)
 {
-   auto json_req = req->getJsonObject();
+    auto id_vec = parseIdsFromJson(req->getJsonObject());
+    bool success = co_await BaseRepository::deleteByIds("categories", id_vec);
 
-   std::vector<int> id_vec;
-   id_vec.reserve(json_req->size());
+    Json::Value json_resp;
+    json_resp["status"] = success ? "ok" : "error";
+    co_return drogon::HttpResponse::newHttpJsonResponse(json_resp);
+}
 
-   for(auto id_json: *json_req)
-   {
-      id_vec.push_back(id_json["id"].asInt());
-   }
-
-   auto db_client = drogon::app().getDbClient();
-
-   try {
-      co_await db_client->execSqlCoro(
-            R"(
-            DELETE FROM categories
-            WHERE id = ANY($1::int[]);
-            )",
-            id_vec
-            );
-   } catch (std::exception& ex) {
-      LOG_ERROR << "error: " << ex.what();
-   }
-
-   Json::Value json_resp;
-   json_resp["status"] = "ok";
-
-   auto resp = drogon::HttpResponse::newHttpJsonResponse(json_resp);
-
-   co_return resp;
+drogon::Task<drogon::HttpResponsePtr> CategoriesController::getCategories(drogon::HttpRequestPtr req)
+{
+    auto json_data = co_await BaseRepository::getAll("categories", mapDictionaryRow);
+    co_return drogon::HttpResponse::newHttpJsonResponse(json_data);
 }

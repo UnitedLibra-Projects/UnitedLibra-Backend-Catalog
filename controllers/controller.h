@@ -4,6 +4,28 @@
 #include <drogon/HttpTypes.h>
 #include <drogon/utils/coroutine.h>
 
+static std::vector<int> parseIdsFromJson(const std::shared_ptr<Json::Value>& json_req) 
+{
+   std::vector<int> id_vec;
+   if (json_req && json_req->isArray()) 
+   {
+      id_vec.reserve(json_req->size());
+      for (const auto& id_json : *json_req) 
+      {
+         id_vec.push_back(id_json["id"].asInt());
+      }
+   }
+   return id_vec;
+}
+
+static Json::Value mapDictionaryRow(const drogon::orm::Row& row) 
+{
+   Json::Value item;
+   item["id"] = row["id"].as<int>();
+   item["name"] = row["name"].as<std::string>();
+   return item;
+}
+
 class BooksController: public drogon::HttpController<BooksController>
 {
 public:
@@ -25,11 +47,15 @@ public:
    METHOD_ADD(CopyBooksController::addCopyBooks, "/books/add-copyBooks", drogon::Post);
    METHOD_ADD(CopyBooksController::deleteCopyBooks, "/books/delete-copyBooks", drogon::Post);
    METHOD_ADD(CopyBooksController::getCopyBooks, "/books/get-copyBooks", drogon::Get);
+   METHOD_ADD(CopyBooksController::getBookCover, "/books/get-cover", drogon::Get);
+   METHOD_ADD(CopyBooksController::changeCopyBooks, "/books/change-copyBooks", drogon::Post);
    METHOD_LIST_END
 
    drogon::Task<drogon::HttpResponsePtr> addCopyBooks(drogon::HttpRequestPtr req);
    drogon::Task<drogon::HttpResponsePtr> deleteCopyBooks(drogon::HttpRequestPtr req);
    drogon::Task<drogon::HttpResponsePtr> getCopyBooks(drogon::HttpRequestPtr req);
+   drogon::Task<drogon::HttpResponsePtr> getBookCover(drogon::HttpRequestPtr req);
+   drogon::Task<drogon::HttpResponsePtr> changeCopyBooks(drogon::HttpRequestPtr req);
 };
 
 class PublishersController: public drogon::HttpController<PublishersController>
