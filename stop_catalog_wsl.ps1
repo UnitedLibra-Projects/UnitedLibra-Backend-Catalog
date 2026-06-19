@@ -1,11 +1,10 @@
 $projectPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$wslProjectPath = wsl.exe -d Ubuntu -- wslpath -a ($projectPath -replace "\\", "/")
+$wslProjectPath = (wsl.exe -d Ubuntu -- wslpath -a ($projectPath -replace "\\", "/")).Trim()
 
 if (-not $wslProjectPath) {
     Write-Error "Не удалось определить путь WSL."
     exit 1
 }
 
-wsl.exe -d Ubuntu -- bash -lc "pkill -f '$wslProjectPath/build/CatalogService' || true"
+wsl.exe -d Ubuntu -- bash -lc "pkill -f 'CatalogService' || true"
 Write-Host "Каталожный backend остановлен."
-

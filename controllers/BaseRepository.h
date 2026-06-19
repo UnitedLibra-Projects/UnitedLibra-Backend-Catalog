@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <sstream>
 #include <trantor/utils/Logger.h>
 
 class BaseRepository {
@@ -14,8 +15,18 @@ public:
       auto db_client = drogon::app().getDbClient();
       try 
       {
-         std::string sql = "DELETE FROM " + tableName + " WHERE id = ANY($1::int[]);";
-         co_await db_client->execSqlCoro(sql, ids);
+         std::ostringstream ids_stream;
+         for (size_t index = 0; index < ids.size(); ++index)
+         {
+            if (index > 0)
+            {
+               ids_stream << ",";
+            }
+            ids_stream << ids[index];
+         }
+
+         std::string sql = "DELETE FROM " + tableName + " WHERE id = ANY(string_to_array($1, ',')::int[]);";
+         co_await db_client->execSqlCoro(sql, ids_stream.str());
          co_return true;
       } 
       catch (const std::exception& ex) 
