@@ -23,7 +23,24 @@ drogon::Task<drogon::HttpResponsePtr> BooksController::addBook(drogon::HttpReque
     std::string title = (*json_req)["title"].asString();
     std::string isbn = (*json_req)["isbn"].asString();
     int year = (*json_req)["year"].asInt();
-    std::string description = (*json_req)["description"].asString();
+    std::string description = "";
+    if ((*json_req).isMember("description"))
+    {
+        description = (*json_req)["description"].asString();
+    }
+
+    int publisher_id = 0;
+    if ((*json_req).isMember("publisher_id"))
+    {
+        publisher_id = (*json_req)["publisher_id"].asInt();
+    }
+
+    if (publisher_id <= 0)
+    {
+        json_resp["status"] = "error";
+        json_resp["message"] = "publisher_id is required";
+        co_return drogon::HttpResponse::newHttpJsonResponse(json_resp);
+    }
 
     std::vector<int> author_ids;
     if ((*json_req).isMember("author_ids") && (*json_req)["author_ids"].isArray()) {
@@ -47,11 +64,11 @@ drogon::Task<drogon::HttpResponsePtr> BooksController::addBook(drogon::HttpReque
     try {
         auto result = co_await trans->execSqlCoro(
             R"(
-            INSERT INTO books (title, isbn, year, publisher_id)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO books (title, description, isbn, year, publisher_id)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING id;
             )",
-            title, isbn, year, description
+            title, description, isbn, year, publisher_id
         );
 
         if (result.empty()) {
@@ -63,7 +80,7 @@ drogon::Task<drogon::HttpResponsePtr> BooksController::addBook(drogon::HttpReque
         for (int author_id : author_ids) {
             co_await trans->execSqlCoro(
                 R"(
-                INSERT INTO "BookAuthors" (book_id, author_id)
+                INSERT INTO bookauthors (book_id, author_id)
                 VALUES ($1, $2);
                 )",
                 new_book_id, author_id
@@ -73,7 +90,7 @@ drogon::Task<drogon::HttpResponsePtr> BooksController::addBook(drogon::HttpReque
         for (int category_id : category_ids) {
             co_await trans->execSqlCoro(
                 R"(
-                INSERT INTO "BookCategories" (book_id, category_id)
+                INSERT INTO bookcategories (book_id, category_id)
                 VALUES ($1, $2);
                 )",
                 new_book_id, category_id
@@ -117,7 +134,8 @@ drogon::Task<drogon::HttpResponsePtr> BooksController::getBooks(drogon::HttpRequ
         book["title"] = row["title"].as<std::string>();
         book["isbn"] = row["isbn"].as<std::string>();
         book["year"] = row["year"].as<int>();
-        book["description"] = row["description"].as<int>();
+        book["description"] = row["description"].as<std::string>();
+        book["publisher_id"] = row["publisher_id"].as<int>();
         return book;
     });
 

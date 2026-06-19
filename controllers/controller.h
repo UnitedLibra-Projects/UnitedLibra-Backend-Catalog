@@ -30,9 +30,9 @@ class BooksController: public drogon::HttpController<BooksController>
 {
 public:
    METHOD_LIST_BEGIN
-   METHOD_ADD(BooksController::addBook, "/books/add-book", drogon::Post);
-   METHOD_ADD(BooksController::deleteBooks, "/books/delete-book", drogon::Post);
-   METHOD_ADD(BooksController::getBooks, "/books/get-book", drogon::Get);
+   ADD_METHOD_TO(BooksController::addBook, "/books/add-book", drogon::Post);
+   ADD_METHOD_TO(BooksController::deleteBooks, "/books/delete-book", drogon::Post);
+   ADD_METHOD_TO(BooksController::getBooks, "/books/get-book", drogon::Get);
    METHOD_LIST_END
 
    drogon::Task<drogon::HttpResponsePtr> addBook(drogon::HttpRequestPtr req);
@@ -44,11 +44,11 @@ class CopyBooksController: public drogon::HttpController<CopyBooksController>
 {
 public:
    METHOD_LIST_BEGIN
-   METHOD_ADD(CopyBooksController::addCopyBooks, "/books/add-copyBooks", drogon::Post);
-   METHOD_ADD(CopyBooksController::deleteCopyBooks, "/books/delete-copyBooks", drogon::Post);
-   METHOD_ADD(CopyBooksController::getCopyBooks, "/books/get-copyBooks", drogon::Get);
-   METHOD_ADD(CopyBooksController::getBookCover, "/books/get-cover", drogon::Get);
-   METHOD_ADD(CopyBooksController::changeCopyBooks, "/books/change-copyBooks", drogon::Post);
+   ADD_METHOD_TO(CopyBooksController::addCopyBooks, "/books/add-copyBooks", drogon::Post);
+   ADD_METHOD_TO(CopyBooksController::deleteCopyBooks, "/books/delete-copyBooks", drogon::Post);
+   ADD_METHOD_TO(CopyBooksController::getCopyBooks, "/books/get-copyBooks", drogon::Get);
+   ADD_METHOD_TO(CopyBooksController::getBookCover, "/books/get-cover", drogon::Get);
+   ADD_METHOD_TO(CopyBooksController::changeCopyBooks, "/books/change-copyBooks", drogon::Post);
    METHOD_LIST_END
 
    drogon::Task<drogon::HttpResponsePtr> addCopyBooks(drogon::HttpRequestPtr req);
@@ -62,9 +62,9 @@ class PublishersController: public drogon::HttpController<PublishersController>
 {
 public:
    METHOD_LIST_BEGIN
-   METHOD_ADD(PublishersController::addPublishers, "/books/add-publishers", drogon::Post);
-   METHOD_ADD(PublishersController::deletePublishers, "/books/delete-publishers", drogon::Post);
-   METHOD_ADD(PublishersController::getPublishers, "/books/get-publishers", drogon::Get);
+   ADD_METHOD_TO(PublishersController::addPublishers, "/books/add-publishers", drogon::Post);
+   ADD_METHOD_TO(PublishersController::deletePublishers, "/books/delete-publishers", drogon::Post);
+   ADD_METHOD_TO(PublishersController::getPublishers, "/books/get-publishers", drogon::Get);
    METHOD_LIST_END
 
    drogon::Task<drogon::HttpResponsePtr> addPublishers(drogon::HttpRequestPtr req);
@@ -76,9 +76,9 @@ class AuthorsController: public drogon::HttpController<AuthorsController>
 {
 public:
    METHOD_LIST_BEGIN
-   METHOD_ADD(AuthorsController::addAuthors, "/books/add-authors", drogon::Post);
-   METHOD_ADD(AuthorsController::deleteAuthors, "/books/delete-authors", drogon::Post);
-   METHOD_ADD(AuthorsController::getAuthors, "/books/get-authors", drogon::Get);
+   ADD_METHOD_TO(AuthorsController::addAuthors, "/books/add-authors", drogon::Post);
+   ADD_METHOD_TO(AuthorsController::deleteAuthors, "/books/delete-authors", drogon::Post);
+   ADD_METHOD_TO(AuthorsController::getAuthors, "/books/get-authors", drogon::Get);
    METHOD_LIST_END
 
    drogon::Task<drogon::HttpResponsePtr> addAuthors(drogon::HttpRequestPtr req);
@@ -90,9 +90,9 @@ class CategoriesController: public drogon::HttpController<CategoriesController>
 {
 public:
    METHOD_LIST_BEGIN
-   METHOD_ADD(CategoriesController::addCategories, "/books/add-categories", drogon::Post);
-   METHOD_ADD(CategoriesController::deleteCategories, "/books/delete-categories", drogon::Post);
-   METHOD_ADD(CategoriesController::getCategories, "/books/get-categories", drogon::Get);
+   ADD_METHOD_TO(CategoriesController::addCategories, "/books/add-categories", drogon::Post);
+   ADD_METHOD_TO(CategoriesController::deleteCategories, "/books/delete-categories", drogon::Post);
+   ADD_METHOD_TO(CategoriesController::getCategories, "/books/get-categories", drogon::Get);
    METHOD_LIST_END
 
    drogon::Task<drogon::HttpResponsePtr> addCategories(drogon::HttpRequestPtr req);
